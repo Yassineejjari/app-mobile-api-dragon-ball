@@ -1,7 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState, StyleSheet} from 'react';
 import axios from 'axios';
+//import { NavigationContainer } from '@react-navigation/native';
+//import { createStackNavigator } from '@react-navigation/stack';
+//import  HomeScreen  from './screens/HomeScreen';
+//import  DetailsScreen  from './screens/DetailsScreen';
+
 
 export default function App() {
   const [data, setData] = useState(null);
@@ -11,8 +15,7 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://api2.api-onepiece.com/v2/characters/fr');
-        console.log(response);
+        const response = await axios.get('https://dragonball-api.com/api/characters?limit=30');
         setData(response.data);
       } catch (error) {
         setError(error);
@@ -34,15 +37,18 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>Les personnages</Text>
+      <Text>Personnages de Dragon Ball</Text>
 
-      {data && data.map(personnage => (
-        <View key={personnage.id} style={styles.personnageContainer}>
-          <Text style={styles.personnageTitle}>Nom : {personnage.name}</Text>
-          <Text>Taille : {personnage.size}</Text>
-          <Text>Prime : {personnage.bounty}</Text>
-          <Text>Équipage : {personnage.crew}</Text>
-          <Text>Fruit du Demon : {personnage.devilFruit}</Text>
+      {data && data.items.map(character => (
+        <View key={character.id} style={styles.personnageContainer}>
+          <Image source={{ uri: character.image }} style={styles.personnageImage} />
+          <Text style={styles.personnageTitle}>Nom : {character.name}</Text>
+          <Text>Ki : {character.ki}</Text>
+          <Text>maxki : {character.maxKi}</Text>
+          <Text>Race : {character.race}</Text>
+          <Text>Genre : {character.gender}</Text>
+          <Text>Affiliation : {character.affiliation}</Text>
+          {/* Ajoutez d'autres champs selon vos besoins */}
         </View>
       ))}
 
@@ -53,7 +59,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, 
     backgroundColor: 'whitesmoke',
     alignItems: 'center',
     justifyContent: 'space-around',
@@ -63,6 +69,13 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 10,
     borderRadius: 5,
+    alignItems: 'center',
+  },
+  personnageImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
   },
   personnageTitle: {
     fontWeight: 'bold',
