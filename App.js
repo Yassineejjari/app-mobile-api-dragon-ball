@@ -1,68 +1,106 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState, StyleSheet} from 'react';
 import axios from 'axios';
-//import { NavigationContainer } from '@react-navigation/native';
-//import { createStackNavigator } from '@react-navigation/stack';
-//import  HomeScreen  from './screens/HomeScreen';
-//import  DetailsScreen  from './screens/DetailsScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Image, StyleSheet, View, Text, ScrollView, Button } from 'react-native';
+import HomeScreen from './screens/HomeScreen';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import DetailsScreen from './screens/DetailsScreen';
+import FavoriteScreen from './screens/FavoriteScreen';
+import SearchScreen from './screens/SearchScreen';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-export default function App() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://dragonball-api.com/api/characters?limit=30');
-        setData(response.data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <View style={styles.container}><Text>Chargement...</Text></View>;
-  }
-
-  if (error) {
-    return <View style={styles.container}><Text>Une erreur s'est produite : {error.message}</Text></View>;
-  }
-
+function HomeStack() {
   return (
-    <View style={styles.container}>
-      <Text>Personnages de Dragon Ball</Text>
-
-      {data && data.items.map(character => (
-        <View key={character.id} style={styles.personnageContainer}>
-          <Image source={{ uri: character.image }} style={styles.personnageImage} />
-          <Text style={styles.personnageTitle}>Nom : {character.name}</Text>
-          <Text>Ki : {character.ki}</Text>
-          <Text>maxki : {character.maxKi}</Text>
-          <Text>Race : {character.race}</Text>
-          <Text>Genre : {character.gender}</Text>
-          <Text>Affiliation : {character.affiliation}</Text>
-          {/* Ajoutez d'autres champs selon vos besoins */}
-        </View>
-      ))}
-
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="Accueil" component={HomeScreen} />
+      <Stack.Screen name="DetailsHome" component={DetailsScreen} />
+      <Stack.Screen name="Favorite" component={FavoriteScreen} />
+    </Stack.Navigator>
   );
 }
+
+function SearchStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="DetailsSearch" component={DetailsScreen} />
+      <Stack.Screen name="Favorite" component={FavoriteScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function App() {
+  return (
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="Home"
+            component={HomeStack}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="home" color={color} size={size} />
+              ),
+              headerShown: false
+            }}
+          />
+          <Tab.Screen
+            name="Recherche"
+            component={SearchStack}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="search" color={color} size={size} />
+              ),
+              headerShown: false
+            }}
+          />
+          <Tab.Screen
+            name="Favorite"
+            component={FavoriteScreen}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="heart" color={color} size={size} />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+  );
+}
+
+export default App;
+
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
     backgroundColor: 'whitesmoke',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    
+  },
+  Titreperso: {
+    fontFamily: 'Saiyan-Sans.ttf',  
+    fontSize: 20,  
+    marginBottom: 10,
+
+  },
+  logo: {
+    width: 150,  // Ajustez la largeur selon vos besoins
+    height: 50,  // Ajustez la hauteur selon vos besoins
+    resizeMode:"contain",
+    alignSelf: 'center',
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  currentPageText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   personnageContainer: {
     backgroundColor: 'lightgray',
@@ -72,10 +110,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   personnageImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 200,
+    height: 200,
     marginBottom: 10,
+    resizeMode: 'contain',
   },
   personnageTitle: {
     fontWeight: 'bold',
